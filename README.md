@@ -133,7 +133,8 @@ returns a [List of Shared Records](#list-of-shared-records)
 #### Answers
 
 - If you had to generate a new document every time a sharing is added/modified, where would you put that piece of code? What changes would have to be done to your project?
-
+ >Subscribing to the share creation event, I would include a fine tuning regarding the poll period as an aggregation (same share to different users) to leverage a bulk creation.
+ I've created a sample subscription, look for subscriber.SpreadsheetCreationConsumer 
 
 - How was your API design process and what was your motivation on the choice of patterns?
-
+ >I've chosen a minimalist http framework also a basic domain based design, through the event-based (kafka) structure it's to extend and scale this application. 
