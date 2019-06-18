@@ -71,7 +71,7 @@ Start the server:
 
 ### Create spreadsheet share request
 
-`POST /api/sheet`
+`POST /api/sheet/share`
 
 Example request body:
 
@@ -97,7 +97,7 @@ Example request body:
 Required fields: `user_id`, `element`, `emails`
 
 > curl --request POST \
-    --url http://localhost:7000/api/sheet/ \
+    --url http://localhost:7000/api/sheet/share \
     --header 'content-type: application/json' \
     --data '{
     "commands": [
@@ -113,21 +113,21 @@ Required fields: `user_id`, `element`, `emails`
 
 ### Get all spreadsheet shared requests
 
-`GET /api/sheet`
+`GET /api/sheet/shared`
 
 returns a [List of Shared Records](#list-of-shared-records)
 
 > curl --request GET \
-    --url http://localhost:7000/api/sheet
+    --url http://localhost:7000/api/sheet/shared
 
 ### Get spreadsheet shared requests by email
 
-`GET /api/articles/:email`
+`GET /api/sheet/shared/:email`
 
 returns a [List of Shared Records](#list-of-shared-records)
 
 > curl --request GET \
-    --url http://localhost:7000/api/sheet/reginaldo3@gmx.ch
+    --url http://localhost:7000/api/sheet/shared/reginaldo3@gmx.ch
 
 
 #### Answers

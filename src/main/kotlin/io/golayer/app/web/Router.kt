@@ -16,9 +16,9 @@ class Router(private val sheetController: SheetShareController,
     fun register(app: Javalin) {
         app.routes {
             path("sheet/") {
-                post(sheetController::share)
-                get(sheetController::findAll)
-                get(":emails", sheetController::findByEmail)
+                post("share", sheetController::share)
+                get("shared", sheetController::findAll)
+                get("shared/:emails", sheetController::findByEmail)
             }
         }
     }

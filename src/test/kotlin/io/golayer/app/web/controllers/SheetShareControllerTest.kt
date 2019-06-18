@@ -49,23 +49,22 @@ class SheetShareControllerTest {
 
         val shareRequest = RequestShare(user1, listOf(ShareSection(element1, listOf(email1))))
 
-        val postResponse = http.post<String>("/api/sheet", ShareRequestDTO(listOf(shareRequest)))
+        val postResponse = http.post<String>("/api/sheet/share", ShareRequestDTO(listOf(shareRequest)))
 
         await()
         assertEquals(postResponse.status, HttpStatus.OK_200)
 
+
+        assertTrue("check generated uuid4 command id ", uuidPattern.matcher(postResponse.body).matches())
+
+
         eventually {
-            assertTrue("check generated uuid4 command id ", uuidPattern.matcher(postResponse.body).matches())
+            val emailLookup = http.get<SharedCreatedRecordsDTO>("/api/sheet/shared/$email1")
+            assertEquals(emailLookup.status, HttpStatus.OK_200)
+            assertTrue("match a previous added request",
+                    emailLookup.body.sharedRecords
+                            .any { it.email == email1 && it.element == element1 && it.userId == user1 })
         }
-
-
-        val emailLookup =
-                http.get<SharedCreatedRecordsDTO>("/api/sheet/$email1")
-        assertEquals(emailLookup.status, HttpStatus.OK_200)
-        assertTrue("match a previous added request",
-                emailLookup.body.sharedRecords
-                        .any { it.email == email1 && it.element == element1 && it.userId == user1 })
-
     }
 
     @Test
@@ -89,30 +88,34 @@ class SheetShareControllerTest {
                         )
                 )
 
-        val response = http.post<String>("/api/sheet", ShareRequestDTO(listOf(shareRequest)))
+        val response = http.post<String>("/api/sheet/share", ShareRequestDTO(listOf(shareRequest)))
 
-        await()
         assertEquals(response.status, HttpStatus.OK_200)
         assertTrue("check generated uuid4 command id ", uuidPattern.matcher(response.body).matches())
 
-        val emailLookup1 = http.get<SharedCreatedRecordsDTO>("/api/sheet/$email0")
-        assertEquals(emailLookup1.status, HttpStatus.OK_200)
-        assertTrue("match a previous added request email0",
-                emailLookup1.body.sharedRecords
-                        .any { it.email == email0 && it.element == element0 && it.userId == user })
+        eventually {
+            val emailLookup1 = http.get<SharedCreatedRecordsDTO>("/api/sheet/shared/$email0")
+            assertEquals(emailLookup1.status, HttpStatus.OK_200)
+            assertTrue("match a previous added request email0",
+                    emailLookup1.body.sharedRecords
+                            .any { it.email == email0 && it.element == element0 && it.userId == user })
+        }
 
+        eventually {
+            val emailLookup2 = http.get<SharedCreatedRecordsDTO>("/api/sheet/shared/$email1")
+            assertEquals(emailLookup2.status, HttpStatus.OK_200)
+            assertTrue("match a previous added request email1",
+                    emailLookup2.body.sharedRecords
+                            .any { it.email == email1 && it.element == element0 && it.userId == user })
+        }
 
-        val emailLookup2 = http.get<SharedCreatedRecordsDTO>("/api/sheet/$email1")
-        assertEquals(emailLookup2.status, HttpStatus.OK_200)
-        assertTrue("match a previous added request email1",
-                emailLookup2.body.sharedRecords
-                        .any { it.email == email1 && it.element == element0 && it.userId == user })
-
-        val emailLookup3 = http.get<SharedCreatedRecordsDTO>("/api/sheet/$email2")
-        assertEquals(emailLookup3.status, HttpStatus.OK_200)
-        assertTrue("match a previous added request email2",
-                emailLookup3.body.sharedRecords
-                        .any { it.email == email2 && it.element == element1 && it.userId == user })
+        eventually {
+            val emailLookup3 = http.get<SharedCreatedRecordsDTO>("/api/sheet/shared/$email2")
+            assertEquals(emailLookup3.status, HttpStatus.OK_200)
+            assertTrue("match a previous added request email2",
+                    emailLookup3.body.sharedRecords
+                            .any { it.email == email2 && it.element == element1 && it.userId == user })
+        }
     }
 
     @Test
@@ -121,7 +124,7 @@ class SheetShareControllerTest {
                 RequestShare("reginaldo",
                         listOf(ShareSection("HR!A1", listOf("eee@pm.me")))
                 )
-        val response = http.post<String>("/api/sheet", ShareRequestDTO(listOf(shareRequest)))
+        val response = http.post<String>("/api/sheet/share", ShareRequestDTO(listOf(shareRequest)))
         assertEquals(response.status, HttpStatus.UNPROCESSABLE_ENTITY_422)
     }
 
@@ -132,29 +135,30 @@ class SheetShareControllerTest {
                 RequestShare("reginaldo",
                         listOf(ShareSection("HRReport!A1", listOf("user1")))
                 )
-        val response = http.post<String>("/api/sheet", ShareRequestDTO(listOf(shareRequest)))
+        val response = http.post<String>("/api/sheet/share", ShareRequestDTO(listOf(shareRequest)))
         assertEquals(response.status, HttpStatus.UNPROCESSABLE_ENTITY_422)
     }
 
     @Test
     fun `get all sheets`() {
-        val response = http.get<SharedCreatedRecordsDTO>("/api/sheet")
+        val response = http.get<SharedCreatedRecordsDTO>("/api/sheet/shared")
         assertEquals(response.status, HttpStatus.OK_200)
         assertEquals(0, response.body.sharedRecords.size)
 
 
-        http.post<String>("/api/sheet", ShareRequestDTO(listOf(createSimpleShareRequest())))
-        http.post<String>("/api/sheet", ShareRequestDTO(listOf(createComposeShareRequest())))
+        http.post<String>("/api/sheet/share", ShareRequestDTO(listOf(createSimpleShareRequest())))
+        http.post<String>("/api/sheet/share", ShareRequestDTO(listOf(createComposeShareRequest())))
 
-        await()
-        val responseAfter = http.get<SharedCreatedRecordsDTO>("/api/sheet")
-        assertEquals(responseAfter.status, HttpStatus.OK_200)
-        assertEquals(10, responseAfter.body.sharedRecords.size)
+        eventually {
+            val responseAfter = http.get<SharedCreatedRecordsDTO>("/api/sheet/shared")
+            assertEquals(responseAfter.status, HttpStatus.OK_200)
+            assertEquals(10, responseAfter.body.sharedRecords.size)
+        }
     }
 
 
     companion object {
-        private const val WAIT_TIME: Long = 1500
+        private const val WAIT_TIME: Long = 1000
         private fun await(millis: Long = WAIT_TIME) {
             Thread.sleep(millis)
         }
@@ -192,10 +196,10 @@ class SheetShareControllerTest {
 
         private fun warmUp(sheetControllerTest: SheetShareControllerTest) {
             sheetControllerTest.runCatching {
-                createSimpleShareRequest()
-                await()
-                createComposeShareRequest()
-                await()
+                repeat(3) {
+                    await()
+                    createSimpleShareRequest()
+                }
             }
         }
     }

@@ -48,7 +48,7 @@ class HttpUtil(port: Int) {
 
 }
 
-internal fun <T> eventually(waitDuration: Duration = ofSeconds(1), sleepMillis: Long = 500, f: () -> T) =
+internal fun <T> eventually(waitDuration: Duration = ofSeconds(3), sleepMillis: Long = 500, f: () -> T) =
         eventually(waitDuration, Throwable::class.java) {
             Thread.sleep(sleepMillis)
             f()
