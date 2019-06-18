@@ -1,12 +1,12 @@
 package io.golayer.app.config
 
-import io.golayer.app.domain.repository.SpreadsheetShareRepository
-import io.golayer.app.domain.service.SheetService
+import io.golayer.app.domain.repository.SheetShareRepository
+import io.golayer.app.domain.service.SheetShareService
 import io.golayer.app.domain.subscriber.CommandConsumer
 import io.golayer.app.domain.subscriber.ShareEventsConsumer
 import io.golayer.app.domain.subscriber.SpreadsheetCreationConsumer
 import io.golayer.app.web.Router
-import io.golayer.app.web.controllers.SheetController
+import io.golayer.app.web.controllers.SheetShareController
 import org.koin.dsl.module.module
 
 /*
@@ -40,9 +40,9 @@ object ModulesConfig {
     }
 
     private val spreadsheetShareModule = module {
-        single { SheetController(get()) }
-        single { SheetService(get(), get()) }
-        single { SpreadsheetShareRepository(get(), get()) }
+        single { SheetShareController(get()) }
+        single { SheetShareService(get(), get()) }
+        single { SheetShareRepository(get(), get()) }
     }
 
     private val brokerSubscriptionsModule = module {

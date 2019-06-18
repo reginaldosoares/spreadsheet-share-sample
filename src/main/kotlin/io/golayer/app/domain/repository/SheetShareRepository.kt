@@ -18,7 +18,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder
 /*
  * Spreadsheet Sharing Repository operations for the elastic search
  */
-class SpreadsheetShareRepository(private val client: RestHighLevelClient, private val mapper: ObjectMapper) {
+class SheetShareRepository(private val client: RestHighLevelClient, private val mapper: ObjectMapper) {
 
     fun persist(content: String, index: IndexRequest = IndexRequest(SPREADSHEET_SHARE_INDEX)): String =
             requireNotNull(client.index(index.source(content, XContentType.JSON), RequestOptions.DEFAULT).id)
@@ -46,6 +46,9 @@ class SpreadsheetShareRepository(private val client: RestHighLevelClient, privat
             }
 
 
+    /*
+     * TODO the spreadsheet identifiers were planned to be in a index/table, previous function its memorized with this intention
+     */
     fun isSpreadsheetValid(spreadsheetIdentifier: String): Boolean =
             listOf("HRReport", "Actuals", "Assumptions", "Dashboard").map { it.toUpperCase() }
                     .contains(spreadsheetIdentifier.toUpperCase())

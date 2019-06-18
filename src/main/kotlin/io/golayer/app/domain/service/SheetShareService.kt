@@ -1,15 +1,14 @@
 package io.golayer.app.domain.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.golayer.app.config.*
 import io.golayer.app.domain.Command
 import io.golayer.app.domain.RequestShare
 import io.golayer.app.domain.CreatedSharedRecord
-import io.golayer.app.domain.repository.SpreadsheetShareRepository
+import io.golayer.app.domain.repository.SheetShareRepository
 import io.golayer.app.utils.memoize
 
-class SheetService(private val repository: SpreadsheetShareRepository,
-                   private val event: EventProducer) {
+class SheetShareService(private val repository: SheetShareRepository,
+                        private val event: EventProducer) {
     /*
      *  produces async Command share event
      */

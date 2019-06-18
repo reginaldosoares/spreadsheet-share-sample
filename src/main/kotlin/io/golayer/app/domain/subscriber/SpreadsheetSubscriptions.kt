@@ -11,7 +11,7 @@ import io.golayer.app.config.produceEvent
 import io.golayer.app.domain.Command
 import io.golayer.app.domain.CreatedSharedRecord
 import io.golayer.app.domain.RequestShare
-import io.golayer.app.domain.repository.SpreadsheetShareRepository
+import io.golayer.app.domain.repository.SheetShareRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -22,7 +22,7 @@ import java.time.Duration
  * Simple Kafka consumers wrapped on kotlin co-routines
  * - ShareEventsConsumer
  */
-class ShareEventsConsumer(private val repository: SpreadsheetShareRepository,
+class ShareEventsConsumer(private val repository: SheetShareRepository,
                           private val consumer: EventConsumer,
                           private val mapper: ObjectMapper) {
     init {
@@ -58,7 +58,7 @@ class ShareEventsConsumer(private val repository: SpreadsheetShareRepository,
  */
 class CommandConsumer(private val consumer: EventConsumer,
                       private val producer: EventProducer,
-                      private val repository: SpreadsheetShareRepository,
+                      private val repository: SheetShareRepository,
                       private val mapper: ObjectMapper) {
     init {
         GlobalScope.launch {
@@ -100,7 +100,7 @@ class CommandConsumer(private val consumer: EventConsumer,
  * Simple Kafka consumers wrapped on kotlin co-routines
  * - SpreadsheetCreationConsumer
  */
-class SpreadsheetCreationConsumer(private val repository: SpreadsheetShareRepository, private val consumer: EventConsumer) {
+class SpreadsheetCreationConsumer(private val repository: SheetShareRepository, private val consumer: EventConsumer) {
     init {
         GlobalScope.launch {
             consumer()

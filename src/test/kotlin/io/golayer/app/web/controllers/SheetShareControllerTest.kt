@@ -19,7 +19,7 @@ import org.junit.Test
 import java.util.regex.Pattern
 
 
-class SheetControllerTest {
+class SheetShareControllerTest {
     private lateinit var app: Javalin
     private lateinit var http: HttpUtil
     private lateinit var es: HttpUtil
@@ -190,7 +190,7 @@ class SheetControllerTest {
             )
         }
 
-        private fun warmUp(sheetControllerTest: SheetControllerTest) {
+        private fun warmUp(sheetControllerTest: SheetShareControllerTest) {
             sheetControllerTest.runCatching {
                 createSimpleShareRequest()
                 await()

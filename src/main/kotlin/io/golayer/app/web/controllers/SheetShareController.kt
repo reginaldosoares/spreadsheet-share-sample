@@ -4,13 +4,13 @@ import io.golayer.app.domain.Command
 import io.golayer.app.domain.SharedCreatedRecordsDTO
 import io.golayer.app.domain.RequestShare
 import io.golayer.app.domain.ShareRequestDTO
-import io.golayer.app.domain.service.SheetService
+import io.golayer.app.domain.service.SheetShareService
 import io.golayer.app.utils.isEmailValid
 import io.golayer.app.utils.isSharedElementValid
 import io.javalin.Context
 import java.util.*
 
-class SheetController(private val service: SheetService) {
+class SheetShareController(private val service: SheetShareService) {
 
     fun share(ctx: Context) {
         ctx.validatedBody<ShareRequestDTO>()
