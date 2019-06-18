@@ -1,0 +1,46 @@
+version: '2.2'
+services:
+  kafka:
+    image: "wurstmeister/kafka:latest"
+    ports:
+      - "9092:9092"
+    hostname: kafka
+    links:
+      - zookeeper
+    environment:
+      - KAFKA_ADVERTISED_HOST_NAME=127.0.0.1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ADVERTISED_PORT=9092
+      - KAFKA_CREATE_TOPICS=spreadsheet_share_events:1:1;commands:1:1
+    networks:
+      - localnet
+    depends_on:
+      - elastic
+      - zookeeper
+
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+    networks:
+      - localnet
+
+  elastic:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.1.1
+    container_name: es0
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - esdata01:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - localnet
+
+volumes:
+  esdata01:
+    driver: local
+
+networks:
+  localnet:
