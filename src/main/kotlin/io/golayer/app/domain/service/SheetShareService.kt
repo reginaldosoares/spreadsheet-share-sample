@@ -13,7 +13,7 @@ class SheetShareService(private val repository: SheetShareRepository,
      *  produces async Command share event
      */
     fun process(shareCommand: Command<RequestShare>) {
-        event.producesCommand(shareCommand).also { "" }
+        event.producesCommand(shareCommand).also { "222" }
     }
 
     /*
